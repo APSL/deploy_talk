@@ -409,11 +409,9 @@ http://circus.readthedocs.org/en/latest/
 * http://talks.apsl.net/deploy_python/
 * https://github.com/APSL/deploy_talk
 
-Thanks to:                                                                     
-                                                                               
-* http://berb.github.io/diploma-thesis/community/index.html                    
-* http://ruslanspivak.com/lsbaws-part1/                                        
-* http://ruslanspivak.com/lsbaws-part2/                                        
-                                                                                
-* landslide python: https://github.com/adamzap/landslide                       
-* avalanche lanslide theme:  https://github.com/akrabat/avalanche       
+* Thanks to:
+    * http://ruslanspivak.com/lsbaws-part1/
+    * http://ruslanspivak.com/lsbaws-part2/
+    * http://berb.github.io/diploma-thesis/community/index.html
+    * landslide python: https://github.com/adamzap/landslide                       
+    * avalanche lanslide theme:  https://github.com/akrabat/avalanche       

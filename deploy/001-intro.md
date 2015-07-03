@@ -3,6 +3,8 @@
 ## Desplegando aplicaciones
 
 
+http://talks.apsl.net/deploy_python/
+
 
 .fx: titleslide
 

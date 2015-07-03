@@ -406,6 +406,7 @@ http://circus.readthedocs.org/en/latest/
 
 # GRACIAS!
 
+* http://talks.apsl.net/deploy_python/
 * https://github.com/APSL/deploy_talk
 
 Thanks to:                                                                     

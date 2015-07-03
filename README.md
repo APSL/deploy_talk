@@ -3,6 +3,8 @@ Slides despliegue Python producción
 
 Creantbits Jul 2015
 
+http://talks.apsl.net/deploy_python/
+
 Thanks to: 
 
 * http://berb.github.io/diploma-thesis/community/index.html

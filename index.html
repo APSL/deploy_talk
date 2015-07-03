@@ -1,0 +1,2094 @@
+<!DOCTYPE html>
+<!--
+  Copyright 2010 Google Inc.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+
+  Original slides: Marcin Wichary (mwichary@google.com)
+  Modifications: Ernest Delgado (ernestd@google.com)
+                 Alex Russell (slightlyoff@chromium.org)
+
+  landslide modifications: Adam Zapletal (adamzap@gmail.com)
+                           Nicolas Perriault (nperriault@gmail.com)
+-->
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Python en producción</title>
+    <!-- Styles -->
+    
+    <link rel="stylesheet" media="print" href="temas/avalanche/avalanche/css/print.css">
+    <link rel="stylesheet" media="screen, projection" href="temas/avalanche/avalanche/css/screen.css">
+    
+    
+      
+      <link rel="stylesheet" href="temas/avalanche/custom_css/pygments/default.css">
+      
+    
+      
+      <link rel="stylesheet" href="custom.css">
+      
+    
+    <!-- /Styles -->
+    <!-- Javascripts -->
+    
+    <script type="text/javascript" src="temas/avalanche/avalanche/js/slides.js"></script>
+    
+    
+    <!-- /Javascripts -->
+</head>
+<body>
+  <div id="blank"></div>
+  <div class="presentation">
+    <div id="time">
+      <span id="hours">00</span>:<span id="minutes">00</span>:<span id="seconds">00</span>
+    </div>            
+    <div id="current_presenter_notes">
+      <div id="presenter_note"></div>
+    </div>
+    <div class="slides">
+      
+      <!-- slide source: deploy/001-intro.md -->
+      <div class="slide-wrapper">
+        <div class="slide titleslide">
+          <div class="inner">
+            
+            <header><h1>Python en producción</h1></header>
+            
+            
+            <section><h2>Desplegando aplicaciones</h2>
+</section>
+            
+          </div>
+          <div class="presenter_notes">
+            <header><h1>Notes</h1></header>
+            <section>
+            
+            </section>
+          </div>
+          <footer>
+            
+            <aside class="source">
+              Source: <a href="deploy/001-intro.md">deploy/001-intro.md</a>
+            </aside>
+            
+            <aside class="page_number">
+              1/38
+            </aside>
+          </footer>
+          <div class="apsl">
+             Desplegando apps python · Creantbits · Jul 2015
+            <img class="logoapsl" src="img/apsl.png" />
+          </div>
+        </div>
+      </div>
+      
+      <!-- slide source: deploy/001-intro.md -->
+      <div class="slide-wrapper">
+        <div class="slide">
+          <div class="inner">
+            
+            <header><h1>Agenda</h1></header>
+            
+            
+            <section><ul>
+<li>Arquitecturas web escalables</li>
+<li>Opciones despliegue en produción</li>
+<li>Python Web Server Gateway Interface  (WSGI)</li>
+<li>Desplegando python<ul>
+<li>gunicorn</li>
+<li>uwsgi</li>
+<li>chaussette + circus</li>
+</ul>
+</li>
+<li>Práctica<ul>
+<li>uwsgi</li>
+<li>circus + chaussette</li>
+<li>nginx</li>
+</ul>
+</li>
+</ul></section>
+            
+          </div>
+          <div class="presenter_notes">
+            <header><h1>Notes</h1></header>
+            <section>
+            
+            </section>
+          </div>
+          <footer>
+            
+            <aside class="source">
+              Source: <a href="deploy/001-intro.md">deploy/001-intro.md</a>
+            </aside>
+            
+            <aside class="page_number">
+              2/38
+            </aside>
+          </footer>
+          <div class="apsl">
+             Desplegando apps python · Creantbits · Jul 2015
+            <img class="logoapsl" src="img/apsl.png" />
+          </div>
+        </div>
+      </div>
+      
+      <!-- slide source: deploy/002-arquitectura.md -->
+      <div class="slide-wrapper">
+        <div class="slide">
+          <div class="inner">
+            
+            <header><h1>Arquitecturas web · conceptos previos</h1></header>
+            
+            
+            <section><ul>
+<li>
+<p>Concurrencia</p>
+<ul>
+<li>Propiedad de un sistema, que representa el hecho de que múltiples actividades
+se ejecutan simultáneamente.</li>
+<li>Programación concurrente: 
+  Es la composición de módulos que se ejecutan independientemente, de forma
+  asíncrona y no determinista.</li>
+<li>Hace referencia a propiedad conceptual de un programa, ya sea  single-core, multi-core o distribuido.</li>
+</ul>
+</li>
+<li>
+<p>Paralelismo</p>
+<ul>
+<li>Es una propiedad de <em>tiempo de ejecución</em> (no conceptual)</li>
+<li>Hace falta más de un procesador, o bién sistema distribuido</li>
+<li>Es una forma de ejecutar programas concurrentes </li>
+</ul>
+</li>
+</ul></section>
+            
+          </div>
+          <div class="presenter_notes">
+            <header><h1>Notes</h1></header>
+            <section>
+            
+            </section>
+          </div>
+          <footer>
+            
+            <aside class="source">
+              Source: <a href="deploy/002-arquitectura.md">deploy/002-arquitectura.md</a>
+            </aside>
+            
+            <aside class="page_number">
+              3/38
+            </aside>
+          </footer>
+          <div class="apsl">
+             Desplegando apps python · Creantbits · Jul 2015
+            <img class="logoapsl" src="img/apsl.png" />
+          </div>
+        </div>
+      </div>
+      
+      <!-- slide source: deploy/002-arquitectura.md -->
+      <div class="slide-wrapper">
+        <div class="slide">
+          <div class="inner">
+            
+            <header><h1>Arquitecturas web · conceptos previos</h1></header>
+            
+            
+            <section><ul>
+<li>
+<p>Escalabilidad</p>
+<ul>
+<li>Propiedad de un sistema, que describe la habilidad de gestionar subidas
+y bajadas de carga de trabajo apropiadamente</li>
+<li>Vertical: Más recursos a un sólo nodo: CPU, Memoria, Disco...</li>
+<li>Horizontal: Más nodos en el sistema</li>
+</ul>
+</li>
+<li>
+<p>Escalabilidad y concurrencia</p>
+<ul>
+<li>Íntimamente relacionados</li>
+<li>La concurrencia puede hacer a una aplicación escalable</li>
+<li>Mediante concurrencia y paralelismo, podemos exprimir las caracteríasticas 
+  del hardware (Ej: extender ejecución a múltiples cores)</li>
+</ul>
+</li>
+</ul>
+</section>
+            
+          </div>
+          <div class="presenter_notes">
+            <header><h1>Notes</h1></header>
+            <section>
+            
+              <p>Introducimos modelos de concurrencia, para exponer problemática y acabar viendo
+ porqué usamos procesos simples, sincronos, bloqueantes.</p>
+            
+            </section>
+          </div>
+          <footer>
+            
+            <aside class="source">
+              Source: <a href="deploy/002-arquitectura.md">deploy/002-arquitectura.md</a>
+            </aside>
+            
+            <aside class="page_number">
+              4/38
+            </aside>
+          </footer>
+          <div class="apsl">
+             Desplegando apps python · Creantbits · Jul 2015
+            <img class="logoapsl" src="img/apsl.png" />
+          </div>
+        </div>
+      </div>
+      
+      <!-- slide source: deploy/002-arquitectura.md -->
+      <div class="slide-wrapper">
+        <div class="slide">
+          <div class="inner">
+            
+            <header><h1>Aplicación web</h1></header>
+            
+            
+            <section><p><img src='img/LSBAWS_HTTP_request_response.png' /></p></section>
+            
+          </div>
+          <div class="presenter_notes">
+            <header><h1>Notes</h1></header>
+            <section>
+            
+            </section>
+          </div>
+          <footer>
+            
+            <aside class="source">
+              Source: <a href="deploy/002-arquitectura.md">deploy/002-arquitectura.md</a>
+            </aside>
+            
+            <aside class="page_number">
+              5/38
+            </aside>
+          </footer>
+          <div class="apsl">
+             Desplegando apps python · Creantbits · Jul 2015
+            <img class="logoapsl" src="img/apsl.png" />
+          </div>
+        </div>
+      </div>
+      
+      <!-- slide source: deploy/002-arquitectura.md -->
+      <div class="slide-wrapper">
+        <div class="slide">
+          <div class="inner">
+            
+            <header><h1>Rendimiento web</h1></header>
+            
+            
+            <section><p>En términos de peticiones y respuestas web, métricas interesantes:</p>
+<ul>
+<li>Throughput (#peticiones/seg)</li>
+<li>Tiempo de respuesta (ms)</li>
+<li>Transferencia (Mbps) </li>
+<li>Número de peticiones concurrentes</li>
+</ul>
+<p>Y las  estadísticas a mirar en el servidor: </p>
+<ul>
+<li>Uso de CPU</li>
+<li>Carga </li>
+<li><strong>Memoria usada</strong></li>
+<li>Número de procesos, threads, sockets, descriptores de fichero...</li>
+</ul></section>
+            
+          </div>
+          <div class="presenter_notes">
+            <header><h1>Notes</h1></header>
+            <section>
+            
+            </section>
+          </div>
+          <footer>
+            
+            <aside class="source">
+              Source: <a href="deploy/002-arquitectura.md">deploy/002-arquitectura.md</a>
+            </aside>
+            
+            <aside class="page_number">
+              6/38
+            </aside>
+          </footer>
+          <div class="apsl">
+             Desplegando apps python · Creantbits · Jul 2015
+            <img class="logoapsl" src="img/apsl.png" />
+          </div>
+        </div>
+      </div>
+      
+      <!-- slide source: deploy/002-arquitectura.md -->
+      <div class="slide-wrapper">
+        <div class="slide">
+          <div class="inner">
+            
+            <header><h1>Arquitectura web escalable: El objetivo</h1></header>
+            
+            
+            <section><ul>
+<li>Resumiendo el problema:<ul>
+<li>Queremos gestionar tantas peticiones en paralelo como sea posible</li>
+<li>Tan rápido como sea posible</li>
+<li><strong>Con los mínimos recursos necesarios!!</strong></li>
+</ul>
+</li>
+</ul>
+<p>Otra forma de verlo: el uso de recursos aumenta y escala con la carga.</p>
+<ul>
+<li>Dos extremos de ejemplo: <ul>
+<li>Somos pobres y queremos que funcione con la mínima instancia de heroku.</li>
+<li>Queremos escalar miles de peticiones en Amazon, y pero pagar el mínimo necesario.</li>
+<li>En el centro, tenemos un servidor dedicado sobrado: no es crucial para nosotros consumir el mínimo posible.</li>
+</ul>
+</li>
+</ul></section>
+            
+          </div>
+          <div class="presenter_notes">
+            <header><h1>Notes</h1></header>
+            <section>
+            
+            </section>
+          </div>
+          <footer>
+            
+            <aside class="source">
+              Source: <a href="deploy/002-arquitectura.md">deploy/002-arquitectura.md</a>
+            </aside>
+            
+            <aside class="page_number">
+              7/38
+            </aside>
+          </footer>
+          <div class="apsl">
+             Desplegando apps python · Creantbits · Jul 2015
+            <img class="logoapsl" src="img/apsl.png" />
+          </div>
+        </div>
+      </div>
+      
+      <!-- slide source: deploy/002-arquitectura.md -->
+      <div class="slide-wrapper">
+        <div class="slide">
+          <div class="inner">
+            
+            <header><h1>Arquitectura web escalable: El problema</h1></header>
+            
+            
+            <section><ul>
+<li>Queremos servir concurrentemente las peticiones. Necesitamos mapear conexiones y
+  y peticiones a algún modelo de programación concurrente. </li>
+<li>Queremos <strong>escalar</strong> horizontalmente</li>
+<li><strong>Queremos usar el mínimo de recursos</strong></li>
+<li>Sabemos que las peticiones concurrentes provocarán una <strong>mezcla de I/O y CPU</strong><ul>
+<li>En apps donde se deben hacer peticiones síncronas para el cliente, 
+como una dispo hotelera, el porcentaje de I/O se puede disparar.</li>
+</ul>
+</li>
+</ul></section>
+            
+          </div>
+          <div class="presenter_notes">
+            <header><h1>Notes</h1></header>
+            <section>
+            
+            </section>
+          </div>
+          <footer>
+            
+            <aside class="source">
+              Source: <a href="deploy/002-arquitectura.md">deploy/002-arquitectura.md</a>
+            </aside>
+            
+            <aside class="page_number">
+              8/38
+            </aside>
+          </footer>
+          <div class="apsl">
+             Desplegando apps python · Creantbits · Jul 2015
+            <img class="logoapsl" src="img/apsl.png" />
+          </div>
+        </div>
+      </div>
+      
+      <!-- slide source: deploy/002-arquitectura.md -->
+      <div class="slide-wrapper">
+        <div class="slide">
+          <div class="inner">
+            
+            <header><h1>Formas de gestionar I/O</h1></header>
+            
+            
+            <section><p>Modos de I/O a bajo nivel en Linux:</p>
+<p><img src='img/io.png' /></p>
+<ul>
+<li>Para arquitectura web, nos interesa diferenciar entre síncrono/bloqueante, y el resto. </li>
+<li>Nos referimos a los otros tres modelos como como <em>event driven</em><ul>
+<li>Ejemplos componentes asíncronos orientados a eventos<ul>
+<li>Web servers: nginx</li>
+<li>Librerías python: twisted, asyncio, aiohttp, gevent, tornado, crossbar.io</li>
+<li>frameworks python:  API-Hour, klein </li>
+</ul>
+</li>
+</ul>
+</li>
+</ul></section>
+            
+          </div>
+          <div class="presenter_notes">
+            <header><h1>Notes</h1></header>
+            <section>
+            
+            </section>
+          </div>
+          <footer>
+            
+            <aside class="source">
+              Source: <a href="deploy/002-arquitectura.md">deploy/002-arquitectura.md</a>
+            </aside>
+            
+            <aside class="page_number">
+              9/38
+            </aside>
+          </footer>
+          <div class="apsl">
+             Desplegando apps python · Creantbits · Jul 2015
+            <img class="logoapsl" src="img/apsl.png" />
+          </div>
+        </div>
+      </div>
+      
+      <!-- slide source: deploy/002-arquitectura.md -->
+      <div class="slide-wrapper">
+        <div class="slide">
+          <div class="inner">
+            
+            <header><h1>Arquitecturas web Prefork</h1></header>
+            
+            
+            <section><p><img src='img/process-arch.svg' /></p>
+<p>El proceso principal abre socket, crea procesos hijos y comparte socket con ellos. 
+Cada <em>request handler</em>  bloquea esperando conexion.</p></section>
+            
+          </div>
+          <div class="presenter_notes">
+            <header><h1>Notes</h1></header>
+            <section>
+            
+            </section>
+          </div>
+          <footer>
+            
+            <aside class="source">
+              Source: <a href="deploy/002-arquitectura.md">deploy/002-arquitectura.md</a>
+            </aside>
+            
+            <aside class="page_number">
+              10/38
+            </aside>
+          </footer>
+          <div class="apsl">
+             Desplegando apps python · Creantbits · Jul 2015
+            <img class="logoapsl" src="img/apsl.png" />
+          </div>
+        </div>
+      </div>
+      
+      <!-- slide source: deploy/002-arquitectura.md -->
+      <div class="slide-wrapper">
+        <div class="slide">
+          <div class="inner">
+            
+            <header><h1>Diseño de arquitecturas escalables: componentes</h1></header>
+            
+            
+            <section><p><img src='img/web_arch.svg' /></p></section>
+            
+          </div>
+          <div class="presenter_notes">
+            <header><h1>Notes</h1></header>
+            <section>
+            
+            </section>
+          </div>
+          <footer>
+            
+            <aside class="source">
+              Source: <a href="deploy/002-arquitectura.md">deploy/002-arquitectura.md</a>
+            </aside>
+            
+            <aside class="page_number">
+              11/38
+            </aside>
+          </footer>
+          <div class="apsl">
+             Desplegando apps python · Creantbits · Jul 2015
+            <img class="logoapsl" src="img/apsl.png" />
+          </div>
+        </div>
+      </div>
+      
+      <!-- slide source: deploy/002-arquitectura.md -->
+      <div class="slide-wrapper">
+        <div class="slide">
+          <div class="inner">
+            
+            <header><h1>Componentes de nuestra Aplicación Python</h1></header>
+            
+            
+            <section><ul>
+<li>Un servidor web con arquitectura <em>event-driven</em>, gestiona conexiones con los
+  clientes web. Alto rendimiento en I/O de red y ficheros estáticos.<ul>
+<li><strong>nginx</strong>, cherokee, lighttpd</li>
+</ul>
+</li>
+<li>Servidor de aplicaciones python <em>en modo prefork</em> <ul>
+<li>Gestionamos <strong>I/O de nuestra aplicación</strong> mediante peticiones concurrentes</li>
+<li>Programación síncrona, bloqueante, deterministica.<ul>
+<li>Alternativa: programación concurrente en nuestra app: gevent, asyncio, tiwsted...</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul></section>
+            
+          </div>
+          <div class="presenter_notes">
+            <header><h1>Notes</h1></header>
+            <section>
+            
+            </section>
+          </div>
+          <footer>
+            
+            <aside class="source">
+              Source: <a href="deploy/002-arquitectura.md">deploy/002-arquitectura.md</a>
+            </aside>
+            
+            <aside class="page_number">
+              12/38
+            </aside>
+          </footer>
+          <div class="apsl">
+             Desplegando apps python · Creantbits · Jul 2015
+            <img class="logoapsl" src="img/apsl.png" />
+          </div>
+        </div>
+      </div>
+      
+      <!-- slide source: deploy/002-arquitectura.md -->
+      <div class="slide-wrapper">
+        <div class="slide">
+          <div class="inner">
+            
+            <header><h1>Servidor aplicaciones Python</h1></header>
+            
+            
+            <section><ul>
+<li>
+<p>Num workers?</p>
+<ul>
+<li>(2 x $num_cores) + 1</li>
+<li>Dependerá de nuestro porcentaje de I/O !</li>
+</ul>
+</li>
+<li>
+<p>Decisiones: </p>
+<ul>
+<li>Procesos o threads?</li>
+<li>Si gestionamos alto porcentaje I/O mediante procesos bloqueantes,
+  tendremos que escalar en num procesos. La memoria será un factor importante.</li>
+<li>Podemos usar <em>threads</em> para obtener más hilos concurrentes con la misma memoria.<ul>
+<li>Django en general es <em>thread safe</em><ul>
+<li>Cuidado con los <em>custom template tags</em></li>
+<li>Problemas históricos con class based views, parece que arreglados.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul></section>
+            
+          </div>
+          <div class="presenter_notes">
+            <header><h1>Notes</h1></header>
+            <section>
+            
+            </section>
+          </div>
+          <footer>
+            
+            <aside class="source">
+              Source: <a href="deploy/002-arquitectura.md">deploy/002-arquitectura.md</a>
+            </aside>
+            
+            <aside class="page_number">
+              13/38
+            </aside>
+          </footer>
+          <div class="apsl">
+             Desplegando apps python · Creantbits · Jul 2015
+            <img class="logoapsl" src="img/apsl.png" />
+          </div>
+        </div>
+      </div>
+      
+      <!-- slide source: deploy/002-arquitectura.md -->
+      <div class="slide-wrapper">
+        <div class="slide">
+          <div class="inner">
+            
+            <header><h1>Referentes diseño arquitecturas aplicaciones:</h1></header>
+            
+            
+            <section><ul>
+<li>http://12factor.net</li>
+<li><em>shared nothing</em></li>
+<li><em>Inmutable Infrastructure</em></li>
+</ul></section>
+            
+          </div>
+          <div class="presenter_notes">
+            <header><h1>Notes</h1></header>
+            <section>
+            
+            </section>
+          </div>
+          <footer>
+            
+            <aside class="source">
+              Source: <a href="deploy/002-arquitectura.md">deploy/002-arquitectura.md</a>
+            </aside>
+            
+            <aside class="page_number">
+              14/38
+            </aside>
+          </footer>
+          <div class="apsl">
+             Desplegando apps python · Creantbits · Jul 2015
+            <img class="logoapsl" src="img/apsl.png" />
+          </div>
+        </div>
+      </div>
+      
+      <!-- slide source: deploy/003-wsgi.md -->
+      <div class="slide-wrapper">
+        <div class="slide">
+          <div class="inner">
+            
+            <header><h1>Servidores de aplicaciones python</h1></header>
+            
+            
+            <section><p><img src='img/lsbaws_part2_before_wsgi.png' /></p>
+<p>http://ruslanspivak.com/lsbaws-part2/</p></section>
+            
+          </div>
+          <div class="presenter_notes">
+            <header><h1>Notes</h1></header>
+            <section>
+            
+            </section>
+          </div>
+          <footer>
+            
+            <aside class="source">
+              Source: <a href="deploy/003-wsgi.md">deploy/003-wsgi.md</a>
+            </aside>
+            
+            <aside class="page_number">
+              15/38
+            </aside>
+          </footer>
+          <div class="apsl">
+             Desplegando apps python · Creantbits · Jul 2015
+            <img class="logoapsl" src="img/apsl.png" />
+          </div>
+        </div>
+      </div>
+      
+      <!-- slide source: deploy/003-wsgi.md -->
+      <div class="slide-wrapper">
+        <div class="slide has_code">
+          <div class="inner">
+            
+            <header><h1>Ejemplo: Apache + mod_python + Django</h1></header>
+            
+            
+            <section><div class="highlight"><pre># from the past!
+<span class="nt">&lt;Location</span> <span class="err">&quot;/mysite/&quot;</span><span class="nt">&gt;</span>
+    SetHandler python-program
+    PythonHandler django.core.handlers.modpython
+    SetEnv DJANGO_SETTINGS_MODULE mysite.settings
+    PythonOption django.root /mysite
+    PythonDebug On
+<span class="nt">&lt;/Location&gt;</span>
+</pre></div>
+</section>
+            
+          </div>
+          <div class="presenter_notes">
+            <header><h1>Notes</h1></header>
+            <section>
+            
+            </section>
+          </div>
+          <footer>
+            
+            <aside class="source">
+              Source: <a href="deploy/003-wsgi.md">deploy/003-wsgi.md</a>
+            </aside>
+            
+            <aside class="page_number">
+              16/38
+            </aside>
+          </footer>
+          <div class="apsl">
+             Desplegando apps python · Creantbits · Jul 2015
+            <img class="logoapsl" src="img/apsl.png" />
+          </div>
+        </div>
+      </div>
+      
+      <!-- slide source: deploy/003-wsgi.md -->
+      <div class="slide-wrapper">
+        <div class="slide">
+          <div class="inner">
+            
+            <header><h1>Servidores de aplicaciones python</h1></header>
+            
+            
+            <section><p><img src='img/lsbaws_part2_after_wsgi.png' /></p></section>
+            
+          </div>
+          <div class="presenter_notes">
+            <header><h1>Notes</h1></header>
+            <section>
+            
+            </section>
+          </div>
+          <footer>
+            
+            <aside class="source">
+              Source: <a href="deploy/003-wsgi.md">deploy/003-wsgi.md</a>
+            </aside>
+            
+            <aside class="page_number">
+              17/38
+            </aside>
+          </footer>
+          <div class="apsl">
+             Desplegando apps python · Creantbits · Jul 2015
+            <img class="logoapsl" src="img/apsl.png" />
+          </div>
+        </div>
+      </div>
+      
+      <!-- slide source: deploy/003-wsgi.md -->
+      <div class="slide-wrapper">
+        <div class="slide">
+          <div class="inner">
+            
+            <header><h1>Python Web Server Gateway Interface</h1></header>
+            
+            
+            <section><p><img src='img/lsbaws_part2_wsgi_idea.png' /></p>
+<p>https://www.python.org/dev/peps/pep-0333/</p></section>
+            
+          </div>
+          <div class="presenter_notes">
+            <header><h1>Notes</h1></header>
+            <section>
+            
+            </section>
+          </div>
+          <footer>
+            
+            <aside class="source">
+              Source: <a href="deploy/003-wsgi.md">deploy/003-wsgi.md</a>
+            </aside>
+            
+            <aside class="page_number">
+              18/38
+            </aside>
+          </footer>
+          <div class="apsl">
+             Desplegando apps python · Creantbits · Jul 2015
+            <img class="logoapsl" src="img/apsl.png" />
+          </div>
+        </div>
+      </div>
+      
+      <!-- slide source: deploy/003-wsgi.md -->
+      <div class="slide-wrapper">
+        <div class="slide">
+          <div class="inner">
+            
+            <header><h1>Web Server Gateway Interface</h1></header>
+            
+            
+            <section><p><img src='img/lsbaws_part2_wsgi_interop.png' /></p></section>
+            
+          </div>
+          <div class="presenter_notes">
+            <header><h1>Notes</h1></header>
+            <section>
+            
+            </section>
+          </div>
+          <footer>
+            
+            <aside class="source">
+              Source: <a href="deploy/003-wsgi.md">deploy/003-wsgi.md</a>
+            </aside>
+            
+            <aside class="page_number">
+              19/38
+            </aside>
+          </footer>
+          <div class="apsl">
+             Desplegando apps python · Creantbits · Jul 2015
+            <img class="logoapsl" src="img/apsl.png" />
+          </div>
+        </div>
+      </div>
+      
+      <!-- slide source: deploy/003-wsgi.md -->
+      <div class="slide-wrapper">
+        <div class="slide">
+          <div class="inner">
+            
+            <header><h1>WSGI</h1></header>
+            
+            
+            <section><p><img src='img/lsbaws_part2_wsgi_interface.png' /></p></section>
+            
+          </div>
+          <div class="presenter_notes">
+            <header><h1>Notes</h1></header>
+            <section>
+            
+            </section>
+          </div>
+          <footer>
+            
+            <aside class="source">
+              Source: <a href="deploy/003-wsgi.md">deploy/003-wsgi.md</a>
+            </aside>
+            
+            <aside class="page_number">
+              20/38
+            </aside>
+          </footer>
+          <div class="apsl">
+             Desplegando apps python · Creantbits · Jul 2015
+            <img class="logoapsl" src="img/apsl.png" />
+          </div>
+        </div>
+      </div>
+      
+      <!-- slide source: deploy/003-wsgi.md -->
+      <div class="slide-wrapper">
+        <div class="slide has_code">
+          <div class="inner">
+            
+            <header><h1>Ejemplo WSGI: simple callable</h1></header>
+            
+            
+            <section><div class="highlight"><pre><span class="c"># simple.py</span>
+<span class="k">def</span> <span class="nf">app</span><span class="p">(</span><span class="n">environ</span><span class="p">,</span> <span class="n">start_response</span><span class="p">):</span>
+    <span class="n">status</span> <span class="o">=</span> <span class="s">&#39;200 OK&#39;</span> <span class="c"># HTTP Status</span>
+    <span class="n">headers</span> <span class="o">=</span> <span class="p">[(</span><span class="s">&#39;Content-type&#39;</span><span class="p">,</span> <span class="s">&#39;text/plain&#39;</span><span class="p">)]</span> <span class="c"># HTTP Headers</span>
+    <span class="n">start_response</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">headers</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">[</span><span class="s">&quot;Hello from &quot;</span><span class="p">,</span> <span class="s">&quot;simple app&quot;</span><span class="p">,</span> <span class="p">]</span>
+</pre></div>
+</section>
+            
+          </div>
+          <div class="presenter_notes">
+            <header><h1>Notes</h1></header>
+            <section>
+            
+            </section>
+          </div>
+          <footer>
+            
+            <aside class="source">
+              Source: <a href="deploy/003-wsgi.md">deploy/003-wsgi.md</a>
+            </aside>
+            
+            <aside class="page_number">
+              21/38
+            </aside>
+          </footer>
+          <div class="apsl">
+             Desplegando apps python · Creantbits · Jul 2015
+            <img class="logoapsl" src="img/apsl.png" />
+          </div>
+        </div>
+      </div>
+      
+      <!-- slide source: deploy/003-wsgi.md -->
+      <div class="slide-wrapper">
+        <div class="slide has_code">
+          <div class="inner">
+            
+            <header><h1>Ejemplo WSGI: aplicación Flask</h1></header>
+            
+            
+            <section><div class="highlight"><pre><span class="c"># flaskapp.py</span>
+<span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span>
+<span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Response</span>
+<span class="n">flask_app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="s">&#39;flaskapp&#39;</span><span class="p">)</span>
+
+
+<span class="nd">@flask_app.route</span><span class="p">(</span><span class="s">&#39;/hello&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">hello_world</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">Response</span><span class="p">(</span>
+        <span class="s">&#39;Hello world from Flask!</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">,</span>
+        <span class="n">mimetype</span><span class="o">=</span><span class="s">&#39;text/plain&#39;</span>
+    <span class="p">)</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">flask_app</span><span class="o">.</span><span class="n">wsgi_app</span>
+</pre></div>
+</section>
+            
+          </div>
+          <div class="presenter_notes">
+            <header><h1>Notes</h1></header>
+            <section>
+            
+            </section>
+          </div>
+          <footer>
+            
+            <aside class="source">
+              Source: <a href="deploy/003-wsgi.md">deploy/003-wsgi.md</a>
+            </aside>
+            
+            <aside class="page_number">
+              22/38
+            </aside>
+          </footer>
+          <div class="apsl">
+             Desplegando apps python · Creantbits · Jul 2015
+            <img class="logoapsl" src="img/apsl.png" />
+          </div>
+        </div>
+      </div>
+      
+      <!-- slide source: deploy/003-wsgi.md -->
+      <div class="slide-wrapper">
+        <div class="slide has_code">
+          <div class="inner">
+            
+            <header><h1>Ejemplo WSGI: aplicación django</h1></header>
+            
+            
+            <section><div class="highlight"><pre><span class="c"># djangoapp/views.py</span>
+<span class="kn">from</span> <span class="nn">django.http</span> <span class="kn">import</span> <span class="n">HttpResponse</span>
+<span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">HttpResponse</span><span class="p">(</span>
+        <span class="s">&#39;Hello world from Django!</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">,</span>
+        <span class="n">content_type</span><span class="o">=</span><span class="s">&#39;text/plain&#39;</span>
+    <span class="p">)</span>
+
+<span class="c"># djangoapp/urls.py</span>
+<span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="kn">import</span> <span class="n">patterns</span><span class="p">,</span> <span class="n">include</span><span class="p">,</span> <span class="n">url</span>
+<span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="n">patterns</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">,</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r&#39;^hello/&#39;</span><span class="p">,</span> <span class="s">&#39;djangoapp.views.index&#39;</span><span class="p">),</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r&#39;^admin/&#39;</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">urls</span><span class="p">)),</span>
+<span class="p">)</span>
+
+<span class="c"># djangoapp/wsgi.py</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s">&quot;DJANGO_SETTINGS_MODULE&quot;</span><span class="p">,</span> <span class="s">&quot;settings&quot;</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">django.core.wsgi</span> <span class="kn">import</span> <span class="n">get_wsgi_application</span>
+<span class="n">application</span> <span class="o">=</span> <span class="n">get_wsgi_application</span><span class="p">()</span>
+</pre></div>
+</section>
+            
+          </div>
+          <div class="presenter_notes">
+            <header><h1>Notes</h1></header>
+            <section>
+            
+            </section>
+          </div>
+          <footer>
+            
+            <aside class="source">
+              Source: <a href="deploy/003-wsgi.md">deploy/003-wsgi.md</a>
+            </aside>
+            
+            <aside class="page_number">
+              23/38
+            </aside>
+          </footer>
+          <div class="apsl">
+             Desplegando apps python · Creantbits · Jul 2015
+            <img class="logoapsl" src="img/apsl.png" />
+          </div>
+        </div>
+      </div>
+      
+      <!-- slide source: deploy/003-wsgi.md -->
+      <div class="slide-wrapper">
+        <div class="slide">
+          <div class="inner">
+            
+            <header><h1>Servidor de aplicaciones python en producción</h1></header>
+            
+            
+            <section><ul>
+<li>
+<p>Tareas a gestionar:</p>
+<ul>
+<li>Abrir socket y compartirlo</li>
+<li>Crear procesos prefork (+ threads)</li>
+<li>Supervisar procesos</li>
+<li>Escalar procesos ?</li>
+<li>Inicializar Virtualenv</li>
+<li>¿Dónde guardamos la configuración?</li>
+</ul>
+</li>
+<li>
+<p>Nuestro app server tendrá varios componentes que se repartirán la responsabilidad de cada tarea.</p>
+</li>
+</ul></section>
+            
+          </div>
+          <div class="presenter_notes">
+            <header><h1>Notes</h1></header>
+            <section>
+            
+            </section>
+          </div>
+          <footer>
+            
+            <aside class="source">
+              Source: <a href="deploy/003-wsgi.md">deploy/003-wsgi.md</a>
+            </aside>
+            
+            <aside class="page_number">
+              24/38
+            </aside>
+          </footer>
+          <div class="apsl">
+             Desplegando apps python · Creantbits · Jul 2015
+            <img class="logoapsl" src="img/apsl.png" />
+          </div>
+        </div>
+      </div>
+      
+      <!-- slide source: deploy/003-wsgi.md -->
+      <div class="slide-wrapper">
+        <div class="slide">
+          <div class="inner">
+            
+            <header><h1>gunicorn</h1></header>
+            
+            
+            <section><ul>
+<li>http://gunicorn.org/</li>
+<li>python WSGI server</li>
+<li>Modelo servidor: <ul>
+<li>Síncrono: prefork</li>
+<li>Asíncrono <ul>
+<li>greenlets</li>
+<li>tornado</li>
+<li>asyncio</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>pip install gunicorn</li>
+</ul>
+<p>gunicorn -w 2 flaskapp:app
+gunicorn -w 2 djangoapp.wsgi:application</p></section>
+            
+          </div>
+          <div class="presenter_notes">
+            <header><h1>Notes</h1></header>
+            <section>
+            
+            </section>
+          </div>
+          <footer>
+            
+            <aside class="source">
+              Source: <a href="deploy/003-wsgi.md">deploy/003-wsgi.md</a>
+            </aside>
+            
+            <aside class="page_number">
+              25/38
+            </aside>
+          </footer>
+          <div class="apsl">
+             Desplegando apps python · Creantbits · Jul 2015
+            <img class="logoapsl" src="img/apsl.png" />
+          </div>
+        </div>
+      </div>
+      
+      <!-- slide source: deploy/003-wsgi.md -->
+      <div class="slide-wrapper">
+        <div class="slide">
+          <div class="inner">
+            
+            <header><h1>chaussette</h1></header>
+            
+            
+            <section><ul>
+<li>http://chaussette.readthedocs.org/</li>
+<li>python WSGI server</li>
+<li>Múltiples backends:<ul>
+<li>gevent – based on Gevent’s pywsgi server</li>
+<li>fastgevent – based on Gevent’s wsgi server – faster but does not support streaming.</li>
+<li>meinheld – based on Meinheld’s fast C server</li>
+<li>waitress – based on Pyramid’s waitress pure Python web server (py3)</li>
+<li>eventlet – based on Eventlet’s wsgi server</li>
+<li>geventwebsocket – Gevent’s pywsgi server coupled with geventwebsocket handler.</li>
+<li>geventws4py – Gevent’s pywsgi server coupled with ws4py handler.</li>
+<li>socketio – based on gevent-socketio, which is a custom Gevent server &amp; handler that manages the socketio protocol.</li>
+<li>bjoern – based on Bjoern.</li>
+<li>tornado – based on Tornado’s wsgi server.</li>
+</ul>
+</li>
+<li>Pensado para no gestionar el socket</li>
+</ul></section>
+            
+          </div>
+          <div class="presenter_notes">
+            <header><h1>Notes</h1></header>
+            <section>
+            
+            </section>
+          </div>
+          <footer>
+            
+            <aside class="source">
+              Source: <a href="deploy/003-wsgi.md">deploy/003-wsgi.md</a>
+            </aside>
+            
+            <aside class="page_number">
+              26/38
+            </aside>
+          </footer>
+          <div class="apsl">
+             Desplegando apps python · Creantbits · Jul 2015
+            <img class="logoapsl" src="img/apsl.png" />
+          </div>
+        </div>
+      </div>
+      
+      <!-- slide source: deploy/003-wsgi.md -->
+      <div class="slide-wrapper">
+        <div class="slide has_code">
+          <div class="inner">
+            
+            <header><h1>uwsgi</h1></header>
+            
+            
+            <section><ul>
+<li>Servidor WSGI implementado en C</li>
+<li>Alto rendimiento</li>
+<li>modo prefork, soporta combinación de procesos y threads</li>
+<li>Reinicio graceful</li>
+<li>Protocolo uwsgi comunicación con web server (también server propio)</li>
+</ul>
+<p>. </p>
+<div class="highlight"><pre>uwsgi --http :8000 --module flaskapp:app   <span class="se">\</span>
+ --master --processes 4  --threads 2
+</pre></div>
+</section>
+            
+          </div>
+          <div class="presenter_notes">
+            <header><h1>Notes</h1></header>
+            <section>
+            
+            </section>
+          </div>
+          <footer>
+            
+            <aside class="source">
+              Source: <a href="deploy/003-wsgi.md">deploy/003-wsgi.md</a>
+            </aside>
+            
+            <aside class="page_number">
+              27/38
+            </aside>
+          </footer>
+          <div class="apsl">
+             Desplegando apps python · Creantbits · Jul 2015
+            <img class="logoapsl" src="img/apsl.png" />
+          </div>
+        </div>
+      </div>
+      
+      <!-- slide source: deploy/003-wsgi.md -->
+      <div class="slide-wrapper">
+        <div class="slide">
+          <div class="inner">
+            
+            <header><h1>Servidor de aplicaciones python en producción</h1></header>
+            
+            
+            <section><ul>
+<li>Tareas a gestionar:<ul>
+<li>Abrir socket:  <ul>
+<li>uwsgi, gunicorn, circusd</li>
+</ul>
+</li>
+<li>Prefork procesos:<ul>
+<li>uwsgi, gunicorn, circusd</li>
+</ul>
+</li>
+<li>Supervisar procesos:<ul>
+<li>supervisord, circusd, upstart, systemd, uwsgi</li>
+</ul>
+</li>
+<li>Activar Virtualenv:<ul>
+<li>circusd, uwsgi, bash</li>
+</ul>
+</li>
+<li>Servidor wsgi:<ul>
+<li>chaussette, uwsgi, gunicorn</li>
+</ul>
+</li>
+<li>Servir estáticos<ul>
+<li>nginx, uwsgi, gunicorn</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul></section>
+            
+          </div>
+          <div class="presenter_notes">
+            <header><h1>Notes</h1></header>
+            <section>
+            
+            </section>
+          </div>
+          <footer>
+            
+            <aside class="source">
+              Source: <a href="deploy/003-wsgi.md">deploy/003-wsgi.md</a>
+            </aside>
+            
+            <aside class="page_number">
+              28/38
+            </aside>
+          </footer>
+          <div class="apsl">
+             Desplegando apps python · Creantbits · Jul 2015
+            <img class="logoapsl" src="img/apsl.png" />
+          </div>
+        </div>
+      </div>
+      
+      <!-- slide source: deploy/003-wsgi.md -->
+      <div class="slide-wrapper">
+        <div class="slide">
+          <div class="inner">
+            
+            <header><h1>Servidor de aplicaciones python: combinaciones</h1></header>
+            
+            
+            <section><ul>
+<li>supervisord + uwsgi</li>
+<li>supervisord + gunicorn</li>
+<li>circusd + chaussette</li>
+<li>circusd + uwsgi</li>
+</ul></section>
+            
+          </div>
+          <div class="presenter_notes">
+            <header><h1>Notes</h1></header>
+            <section>
+            
+            </section>
+          </div>
+          <footer>
+            
+            <aside class="source">
+              Source: <a href="deploy/003-wsgi.md">deploy/003-wsgi.md</a>
+            </aside>
+            
+            <aside class="page_number">
+              29/38
+            </aside>
+          </footer>
+          <div class="apsl">
+             Desplegando apps python · Creantbits · Jul 2015
+            <img class="logoapsl" src="img/apsl.png" />
+          </div>
+        </div>
+      </div>
+      
+      <!-- slide source: deploy/003-wsgi.md -->
+      <div class="slide-wrapper">
+        <div class="slide">
+          <div class="inner">
+            
+            <header><h1>Servidor de aplicaciones python: supervisor</h1></header>
+            
+            
+            <section><p>¿Por qué no usamos sysvinit, upstart, systemd? </p>
+<ul>
+<li>Monitorización del proceso: fork() vs "vigilar" el PID<ul>
+<li>No queremos ni oir hablar de <em>start-stop-daemon</em> :P</li>
+</ul>
+</li>
+<li>Gestión redirección de stdout y stderr (logs)</li>
+<li>Parámetros app-friendly (chdir, virtualenv.. )</li>
+<li>formato .ini</li>
+<li>En el caso de circusd, muchas tareas extra (sockets, virtualenv, escalado, stats...)</li>
+</ul></section>
+            
+          </div>
+          <div class="presenter_notes">
+            <header><h1>Notes</h1></header>
+            <section>
+            
+            </section>
+          </div>
+          <footer>
+            
+            <aside class="source">
+              Source: <a href="deploy/003-wsgi.md">deploy/003-wsgi.md</a>
+            </aside>
+            
+            <aside class="page_number">
+              30/38
+            </aside>
+          </footer>
+          <div class="apsl">
+             Desplegando apps python · Creantbits · Jul 2015
+            <img class="logoapsl" src="img/apsl.png" />
+          </div>
+        </div>
+      </div>
+      
+      <!-- slide source: deploy/003-wsgi.md -->
+      <div class="slide-wrapper">
+        <div class="slide has_code">
+          <div class="inner">
+            
+            <header><h1>Gestionar el virtualenv para desplegar</h1></header>
+            
+            
+            <section><h2>Usuario dedicado</h2>
+<div class="highlight"><pre>groupadd -g 500 creantbits
+useradd -g 500 -d /creantbits -m -s /bin/bash creantbits
+</pre></div>
+
+<h2>pip install virtualenvwrapper</h2>
+<div class="highlight"><pre><span class="nb">export </span><span class="nv">WORKON_HOME</span><span class="o">=</span><span class="nv">$HOME</span>/.virtualenvs
+<span class="nb">source</span> /usr/local/bin/virtualenvwrapper.sh
+
+mkvirtualenv django
+workon django
+</pre></div>
+
+<h2>pip install pew</h2>
+<div class="highlight"><pre><span class="nb">export </span><span class="nv">WORKON_HOME</span><span class="o">=</span><span class="nv">$HOME</span>/.virtualenvs
+<span class="nv">PS1</span><span class="o">=</span><span class="s2">&quot;\[\033[01;34m\]\$(basename &#39;$VIRTUAL_ENV&#39;)\e[0m$PS1&quot;</span>
+
+pew-new django
+pew-workon django
+pew-in django python manage.py runserver
+</pre></div>
+</section>
+            
+          </div>
+          <div class="presenter_notes">
+            <header><h1>Notes</h1></header>
+            <section>
+            
+            </section>
+          </div>
+          <footer>
+            
+            <aside class="source">
+              Source: <a href="deploy/003-wsgi.md">deploy/003-wsgi.md</a>
+            </aside>
+            
+            <aside class="page_number">
+              31/38
+            </aside>
+          </footer>
+          <div class="apsl">
+             Desplegando apps python · Creantbits · Jul 2015
+            <img class="logoapsl" src="img/apsl.png" />
+          </div>
+        </div>
+      </div>
+      
+      <!-- slide source: deploy/003-wsgi.md -->
+      <div class="slide-wrapper">
+        <div class="slide has_code">
+          <div class="inner">
+            
+            <header><h1>circus</h1></header>
+            
+            
+            <section><p>http://circus.readthedocs.org/en/latest/</p>
+<div class="highlight"><pre>pip install circus
+pip install circus-web
+</pre></div>
+</section>
+            
+          </div>
+          <div class="presenter_notes">
+            <header><h1>Notes</h1></header>
+            <section>
+            
+            </section>
+          </div>
+          <footer>
+            
+            <aside class="source">
+              Source: <a href="deploy/003-wsgi.md">deploy/003-wsgi.md</a>
+            </aside>
+            
+            <aside class="page_number">
+              32/38
+            </aside>
+          </footer>
+          <div class="apsl">
+             Desplegando apps python · Creantbits · Jul 2015
+            <img class="logoapsl" src="img/apsl.png" />
+          </div>
+        </div>
+      </div>
+      
+      <!-- slide source: deploy/003-wsgi.md -->
+      <div class="slide-wrapper">
+        <div class="slide has_code">
+          <div class="inner">
+            
+            <header><h1>circusd appserver</h1></header>
+            
+            
+            <section><div class="highlight"><pre><span class="k">[circus]</span>
+<span class="na">httpd</span> <span class="o">=</span> <span class="s">True</span>
+<span class="na">statsd</span> <span class="o">=</span> <span class="s">True</span>
+<span class="na">httpd_host</span> <span class="o">=</span> <span class="s">0.0.0.0</span>
+<span class="na">httpd_port</span> <span class="o">=</span> <span class="s">8080</span>
+
+<span class="k">[watcher:creantbits]</span>
+<span class="na">working_dir</span> <span class="o">=</span> <span class="s">/creantbits/djangoapp</span>
+<span class="na">cmd</span> <span class="o">=</span> <span class="s">/usr/local/bin/chaussette --fd $(circus.sockets.creantbits) djangoapp.wsgi.application</span>
+<span class="c1">#working_dir = /creantbits</span>
+<span class="c1">#cmd = /usr/local/bin/chaussette --fd $(circus.sockets.creantbits) flaskapp.app</span>
+<span class="na">numprocesses</span> <span class="o">=</span> <span class="s">60</span>
+<span class="na">use_sockets</span> <span class="o">=</span> <span class="s">True</span>
+<span class="na">uid</span> <span class="o">=</span> <span class="s">django</span>
+<span class="na">gid</span> <span class="o">=</span> <span class="s">django</span>
+<span class="na">virtualenv</span> <span class="o">=</span> <span class="s">/var/pywww/creantbits/.virtualenvs/creantbits</span>
+<span class="na">copy_env</span> <span class="o">=</span> <span class="s">True</span>
+
+<span class="k">[socket:creantbits]</span>
+<span class="na">host</span> <span class="o">=</span> <span class="s">0.0.0.0</span>
+<span class="na">port</span> <span class="o">=</span> <span class="s">8000</span>
+</pre></div>
+</section>
+            
+          </div>
+          <div class="presenter_notes">
+            <header><h1>Notes</h1></header>
+            <section>
+            
+            </section>
+          </div>
+          <footer>
+            
+            <aside class="source">
+              Source: <a href="deploy/003-wsgi.md">deploy/003-wsgi.md</a>
+            </aside>
+            
+            <aside class="page_number">
+              33/38
+            </aside>
+          </footer>
+          <div class="apsl">
+             Desplegando apps python · Creantbits · Jul 2015
+            <img class="logoapsl" src="img/apsl.png" />
+          </div>
+        </div>
+      </div>
+      
+      <!-- slide source: deploy/003-wsgi.md -->
+      <div class="slide-wrapper">
+        <div class="slide has_code">
+          <div class="inner">
+            
+            <header><h1>uwsgi.ini</h1></header>
+            
+            
+            <section><div class="highlight"><pre><span class="k">[uwsgi]</span>
+<span class="na">socket</span> <span class="o">=</span> <span class="s">/tmp/creantbits.sock</span>
+<span class="na">http</span> <span class="o">=</span> <span class="s">:8000</span>
+<span class="na">chmod-socket</span> <span class="o">=</span> <span class="s">666</span>
+<span class="na">master</span> <span class="o">=</span> <span class="s">true</span>
+<span class="na">processes</span> <span class="o">=</span> <span class="s">4</span>
+<span class="na">threads</span> <span class="o">=</span> <span class="s">5</span>
+<span class="na">harakiri</span> <span class="o">=</span> <span class="s">60</span>
+<span class="na">max-requests</span> <span class="o">=</span> <span class="s">2000</span>
+<span class="na">chdir</span> <span class="o">=</span> <span class="s">/creantbits/djangoapp</span>
+<span class="na">pythonpath</span> <span class="o">=</span> <span class="s">/creantbits/djangoapp</span>
+<span class="na">virtualenv</span> <span class="o">=</span> <span class="s">/creantbits/.virtualenvs/creantbits</span>
+<span class="c1">#env = DJANGO_SETTINGS_MODULE=djangoapp.settings</span>
+<span class="c1">#module = django.core.handlers.wsgi:WSGIHandler()</span>
+<span class="na">module</span> <span class="o">=</span> <span class="s">djangoapp.wsgi</span>
+<span class="na">uid</span> <span class="o">=</span> <span class="s">creantbits</span>
+<span class="na">gid</span> <span class="o">=</span> <span class="s">creantbits</span>
+<span class="na">vacuum</span> <span class="o">=</span> <span class="s">true</span>
+<span class="na">touch-reload</span> <span class="o">=</span> <span class="s">/tmp/creantbits.reload</span>
+<span class="c1">#static-map = /static=/tmp/static</span>
+<span class="c1">#static-map = /media=/tmp/media</span>
+<span class="na">disable-logging</span> <span class="o">=</span> <span class="s">0</span>
+<span class="na">memory-report</span> <span class="o">=</span> <span class="s">1</span>
+<span class="na">log-master</span> <span class="o">=</span> <span class="s">1</span>
+<span class="na">log-date</span> <span class="o">=</span> <span class="s">1</span>
+<span class="na">log-slow</span> <span class="o">=</span> <span class="s">1</span>
+<span class="na">log-4xx</span> <span class="o">=</span> <span class="s">1</span>
+<span class="na">log-sendfile</span> <span class="o">=</span> <span class="s">1</span>
+<span class="na">log-micros</span> <span class="o">=</span> <span class="s">0</span>
+<span class="na">log-slow</span> <span class="o">=</span> <span class="s">1</span>
+</pre></div>
+</section>
+            
+          </div>
+          <div class="presenter_notes">
+            <header><h1>Notes</h1></header>
+            <section>
+            
+            </section>
+          </div>
+          <footer>
+            
+            <aside class="source">
+              Source: <a href="deploy/003-wsgi.md">deploy/003-wsgi.md</a>
+            </aside>
+            
+            <aside class="page_number">
+              34/38
+            </aside>
+          </footer>
+          <div class="apsl">
+             Desplegando apps python · Creantbits · Jul 2015
+            <img class="logoapsl" src="img/apsl.png" />
+          </div>
+        </div>
+      </div>
+      
+      <!-- slide source: deploy/003-wsgi.md -->
+      <div class="slide-wrapper">
+        <div class="slide has_code">
+          <div class="inner">
+            
+            <header><h1>supervisor</h1></header>
+            
+            
+            <section><div class="highlight"><pre><span class="k">[program:trespamsz]</span>
+<span class="na">command</span> <span class="o">=</span> <span class="s">/usr/local/bin/uwsgi --ini /etc/uwsgi-prod.d/trespamsz.ini</span>
+<span class="na">directory</span> <span class="o">=</span> <span class="s">/tmp</span>
+<span class="na">user</span><span class="o">=</span><span class="s">trespamsz</span>
+<span class="na">process_name</span><span class="o">=</span><span class="s">trespamsz</span>
+<span class="na">numprocs</span><span class="o">=</span><span class="s">1</span>
+<span class="na">autostart</span><span class="o">=</span><span class="s">true</span>
+<span class="na">redirect_stderr</span><span class="o">=</span><span class="s">true</span>
+<span class="na">stdout_logfile</span><span class="o">=</span><span class="s">/var/log/apps-prod/trespamsz-uwsgi.log</span>
+<span class="na">priority</span><span class="o">=</span><span class="s">10</span>
+<span class="na">umask</span><span class="o">=</span><span class="s">002</span>
+<span class="na">stopsignal</span><span class="o">=</span><span class="s">QUIT</span>
+</pre></div>
+</section>
+            
+          </div>
+          <div class="presenter_notes">
+            <header><h1>Notes</h1></header>
+            <section>
+            
+            </section>
+          </div>
+          <footer>
+            
+            <aside class="source">
+              Source: <a href="deploy/003-wsgi.md">deploy/003-wsgi.md</a>
+            </aside>
+            
+            <aside class="page_number">
+              35/38
+            </aside>
+          </footer>
+          <div class="apsl">
+             Desplegando apps python · Creantbits · Jul 2015
+            <img class="logoapsl" src="img/apsl.png" />
+          </div>
+        </div>
+      </div>
+      
+      <!-- slide source: deploy/003-wsgi.md -->
+      <div class="slide-wrapper">
+        <div class="slide has_code">
+          <div class="inner">
+            
+            <header><h1>nginx</h1></header>
+            
+            
+            <section><div class="highlight"><pre><span class="c"># uwsgi</span>
+location / <span class="o">{</span>
+    include uwsgi_params;
+    uwsgi_pass 127.0.0.1:3031;
+<span class="o">}</span>
+<span class="c"># proxy</span>
+location / <span class="o">{</span>
+    include proxy_params;
+    proxy_pass http://localhost:8000;
+<span class="o">}</span>
+</pre></div>
+</section>
+            
+          </div>
+          <div class="presenter_notes">
+            <header><h1>Notes</h1></header>
+            <section>
+            
+            </section>
+          </div>
+          <footer>
+            
+            <aside class="source">
+              Source: <a href="deploy/003-wsgi.md">deploy/003-wsgi.md</a>
+            </aside>
+            
+            <aside class="page_number">
+              36/38
+            </aside>
+          </footer>
+          <div class="apsl">
+             Desplegando apps python · Creantbits · Jul 2015
+            <img class="logoapsl" src="img/apsl.png" />
+          </div>
+        </div>
+      </div>
+      
+      <!-- slide source: deploy/003-wsgi.md -->
+      <div class="slide-wrapper">
+        <div class="slide has_code">
+          <div class="inner">
+            
+            <header><h1>ejemplo nginx</h1></header>
+            
+            
+            <section><div class="highlight"><pre>server <span class="o">{</span>
+    listen 80;
+    server_name trespams.com;
+    access_log  /var/log/nginx/trespamsz-access.log;
+    error_log  /var/log/nginx/trespamsz-error.log;
+
+    location / <span class="o">{</span>
+        uwsgi_pass unix:/var/pywww/trespamsz/nginx.sock;
+        include uwsgi_params;
+    <span class="o">}</span>
+
+    location /media/trespamsz <span class="o">{</span>
+        root /var/www;
+        expires max;
+        access_log off;
+    <span class="o">}</span>
+    location /static/trespamsz <span class="o">{</span>
+        root /var/www;
+        expires max;
+        access_log off;
+    <span class="o">}</span>
+    location ~ /<span class="se">\.</span>hg <span class="o">{</span>
+        deny  all;
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+</section>
+            
+          </div>
+          <div class="presenter_notes">
+            <header><h1>Notes</h1></header>
+            <section>
+            
+            </section>
+          </div>
+          <footer>
+            
+            <aside class="source">
+              Source: <a href="deploy/003-wsgi.md">deploy/003-wsgi.md</a>
+            </aside>
+            
+            <aside class="page_number">
+              37/38
+            </aside>
+          </footer>
+          <div class="apsl">
+             Desplegando apps python · Creantbits · Jul 2015
+            <img class="logoapsl" src="img/apsl.png" />
+          </div>
+        </div>
+      </div>
+      
+      <!-- slide source: deploy/003-wsgi.md -->
+      <div class="slide-wrapper">
+        <div class="slide has_code">
+          <div class="inner">
+            
+            <header><h1>Consideraciones nginx en producción</h1></header>
+            
+            
+            <section><h2>timeouts</h2>
+<div class="highlight"><pre>client_body_timeout 12;
+client_header_timeout 12;
+send_timeout 10;
+keepalive_timeout 15;
+</pre></div>
+
+<ul>
+<li>nginx</li>
+<li>uwsgi_params</li>
+<li>uwsgi.ini (harakiri)</li>
+</ul></section>
+            
+          </div>
+          <div class="presenter_notes">
+            <header><h1>Notes</h1></header>
+            <section>
+            
+            </section>
+          </div>
+          <footer>
+            
+            <aside class="source">
+              Source: <a href="deploy/003-wsgi.md">deploy/003-wsgi.md</a>
+            </aside>
+            
+            <aside class="page_number">
+              38/38
+            </aside>
+          </footer>
+          <div class="apsl">
+             Desplegando apps python · Creantbits · Jul 2015
+            <img class="logoapsl" src="img/apsl.png" />
+          </div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+  
+  
+  <div id="toc" class="sidebar hidden">
+    <h2>Table of Contents</h2>
+    <table>
+      <caption>Table of Contents</caption>
+      
+      <tr id="toc-row-1">
+        <th><a href="#slide1">Python en producción</a></th>
+        <td><a href="#slide1">1</a></td>
+      </tr>
+      
+      
+      <tr id="toc-row-2">
+        <th><a href="#slide2">Agenda</a></th>
+        <td><a href="#slide2">2</a></td>
+      </tr>
+      
+      
+      <tr id="toc-row-3">
+        <th><a href="#slide3">Arquitecturas web · conceptos previos</a></th>
+        <td><a href="#slide3">3</a></td>
+      </tr>
+      
+      
+      <tr id="toc-row-4">
+        <th><a href="#slide4">Arquitecturas web · conceptos previos</a></th>
+        <td><a href="#slide4">4</a></td>
+      </tr>
+      
+      
+      <tr id="toc-row-5">
+        <th><a href="#slide5">Aplicación web</a></th>
+        <td><a href="#slide5">5</a></td>
+      </tr>
+      
+      
+      <tr id="toc-row-6">
+        <th><a href="#slide6">Rendimiento web</a></th>
+        <td><a href="#slide6">6</a></td>
+      </tr>
+      
+      
+      <tr id="toc-row-7">
+        <th><a href="#slide7">Arquitectura web escalable: El objetivo</a></th>
+        <td><a href="#slide7">7</a></td>
+      </tr>
+      
+      
+      <tr id="toc-row-8">
+        <th><a href="#slide8">Arquitectura web escalable: El problema</a></th>
+        <td><a href="#slide8">8</a></td>
+      </tr>
+      
+      
+      <tr id="toc-row-9">
+        <th><a href="#slide9">Formas de gestionar I/O</a></th>
+        <td><a href="#slide9">9</a></td>
+      </tr>
+      
+      
+      <tr id="toc-row-10">
+        <th><a href="#slide10">Arquitecturas web Prefork</a></th>
+        <td><a href="#slide10">10</a></td>
+      </tr>
+      
+      
+      <tr id="toc-row-11">
+        <th><a href="#slide11">Diseño de arquitecturas escalables: componentes</a></th>
+        <td><a href="#slide11">11</a></td>
+      </tr>
+      
+      
+      <tr id="toc-row-12">
+        <th><a href="#slide12">Componentes de nuestra Aplicación Python</a></th>
+        <td><a href="#slide12">12</a></td>
+      </tr>
+      
+      
+      <tr id="toc-row-13">
+        <th><a href="#slide13">Servidor aplicaciones Python</a></th>
+        <td><a href="#slide13">13</a></td>
+      </tr>
+      
+      
+      <tr id="toc-row-14">
+        <th><a href="#slide14">Referentes diseño arquitecturas aplicaciones:</a></th>
+        <td><a href="#slide14">14</a></td>
+      </tr>
+      
+      
+      <tr id="toc-row-15">
+        <th><a href="#slide15">Servidores de aplicaciones python</a></th>
+        <td><a href="#slide15">15</a></td>
+      </tr>
+      
+      
+      <tr id="toc-row-16">
+        <th><a href="#slide16">Ejemplo: Apache + mod_python + Django</a></th>
+        <td><a href="#slide16">16</a></td>
+      </tr>
+      
+      
+      <tr id="toc-row-17">
+        <th><a href="#slide17">Servidores de aplicaciones python</a></th>
+        <td><a href="#slide17">17</a></td>
+      </tr>
+      
+      
+      <tr id="toc-row-18">
+        <th><a href="#slide18">Python Web Server Gateway Interface</a></th>
+        <td><a href="#slide18">18</a></td>
+      </tr>
+      
+      
+      <tr id="toc-row-19">
+        <th><a href="#slide19">Web Server Gateway Interface</a></th>
+        <td><a href="#slide19">19</a></td>
+      </tr>
+      
+      
+      <tr id="toc-row-20">
+        <th><a href="#slide20">WSGI</a></th>
+        <td><a href="#slide20">20</a></td>
+      </tr>
+      
+      
+      <tr id="toc-row-21">
+        <th><a href="#slide21">Ejemplo WSGI: simple callable</a></th>
+        <td><a href="#slide21">21</a></td>
+      </tr>
+      
+      
+      <tr id="toc-row-22">
+        <th><a href="#slide22">Ejemplo WSGI: aplicación Flask</a></th>
+        <td><a href="#slide22">22</a></td>
+      </tr>
+      
+      
+      <tr id="toc-row-23">
+        <th><a href="#slide23">Ejemplo WSGI: aplicación django</a></th>
+        <td><a href="#slide23">23</a></td>
+      </tr>
+      
+      
+      <tr id="toc-row-24">
+        <th><a href="#slide24">Servidor de aplicaciones python en producción</a></th>
+        <td><a href="#slide24">24</a></td>
+      </tr>
+      
+      
+      <tr id="toc-row-25">
+        <th><a href="#slide25">gunicorn</a></th>
+        <td><a href="#slide25">25</a></td>
+      </tr>
+      
+      
+      <tr id="toc-row-26">
+        <th><a href="#slide26">chaussette</a></th>
+        <td><a href="#slide26">26</a></td>
+      </tr>
+      
+      
+      <tr id="toc-row-27">
+        <th><a href="#slide27">uwsgi</a></th>
+        <td><a href="#slide27">27</a></td>
+      </tr>
+      
+      
+      <tr id="toc-row-28">
+        <th><a href="#slide28">Servidor de aplicaciones python en producción</a></th>
+        <td><a href="#slide28">28</a></td>
+      </tr>
+      
+      
+      <tr id="toc-row-29">
+        <th><a href="#slide29">Servidor de aplicaciones python: combinaciones</a></th>
+        <td><a href="#slide29">29</a></td>
+      </tr>
+      
+      
+      <tr id="toc-row-30">
+        <th><a href="#slide30">Servidor de aplicaciones python: supervisor</a></th>
+        <td><a href="#slide30">30</a></td>
+      </tr>
+      
+      
+      <tr id="toc-row-31">
+        <th><a href="#slide31">Gestionar el virtualenv para desplegar</a></th>
+        <td><a href="#slide31">31</a></td>
+      </tr>
+      
+      
+      <tr id="toc-row-32">
+        <th><a href="#slide32">circus</a></th>
+        <td><a href="#slide32">32</a></td>
+      </tr>
+      
+      
+      <tr id="toc-row-33">
+        <th><a href="#slide33">circusd appserver</a></th>
+        <td><a href="#slide33">33</a></td>
+      </tr>
+      
+      
+      <tr id="toc-row-34">
+        <th><a href="#slide34">uwsgi.ini</a></th>
+        <td><a href="#slide34">34</a></td>
+      </tr>
+      
+      
+      <tr id="toc-row-35">
+        <th><a href="#slide35">supervisor</a></th>
+        <td><a href="#slide35">35</a></td>
+      </tr>
+      
+      
+      <tr id="toc-row-36">
+        <th><a href="#slide36">nginx</a></th>
+        <td><a href="#slide36">36</a></td>
+      </tr>
+      
+      
+      <tr id="toc-row-37">
+        <th><a href="#slide37">ejemplo nginx</a></th>
+        <td><a href="#slide37">37</a></td>
+      </tr>
+      
+      
+      <tr id="toc-row-38">
+        <th><a href="#slide38">Consideraciones nginx en producción</a></th>
+        <td><a href="#slide38">38</a></td>
+      </tr>
+      
+      
+    </table>
+  </div>
+  
+  <div id="help" class="sidebar hidden">
+    <h2>Help</h2>
+    <table>
+      <caption>Help</caption>
+      <tr>
+        <th>Table of contents</th>
+        <td>t</td>
+      </tr>
+      <tr>
+        <th>Exposé</th>
+        <td>ESC</td>
+      </tr>
+      <tr>
+        <th>Autoscale</th>
+        <td>e</td>
+      </tr>
+      <tr>
+        <th>Full screen slides</th>
+        <td>f</td>
+      </tr>
+      <tr>
+        <th>Presenter view</th>
+        <td>p</td>
+      </tr>
+      <tr>
+        <th>Source files</th>
+        <td>s</td>
+      </tr>
+      <tr>
+        <th>Slide numbers</th>
+        <td>n</td>
+      </tr>
+      <tr>
+        <th>Blank screen</th>
+        <td>b</td>
+      </tr>
+      <tr>
+        <th>Notes</th>
+        <td>2</td>
+      </tr>
+      <tr>
+        <th>Help</th>
+        <td>h</td>
+      </tr>
+    </table>
+  </div>
+  <script>$().landslide();</script>
+</body>
+</html>

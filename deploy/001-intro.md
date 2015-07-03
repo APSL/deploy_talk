@@ -21,8 +21,8 @@ bcabezas@apsl.net · @bercab
     * gunicorn
     * uwsgi
     * chaussette + circus
-* Práctica
-    * uwsgi
+* Demo
     * circus + chaussette
+    * uwsgi
     * nginx
 

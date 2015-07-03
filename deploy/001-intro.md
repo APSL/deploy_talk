@@ -5,6 +5,8 @@
 
 http://talks.apsl.net/deploy_python/
 
+bcabezas@apsl.net · @bercab
+
 
 .fx: titleslide
 

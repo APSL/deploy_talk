@@ -410,6 +410,7 @@ http://circus.readthedocs.org/en/latest/
 * https://github.com/APSL/deploy_talk
 
 * Thanks to:
+    * https://gallir.wordpress.com/principios-de-concurrencia/
     * http://ruslanspivak.com/lsbaws-part1/
     * http://ruslanspivak.com/lsbaws-part2/
     * http://berb.github.io/diploma-thesis/community/index.html

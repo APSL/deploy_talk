@@ -1,6 +1,6 @@
 import sys
-sys.path.insert(0, './helloworld')
-from helloworld import wsgi
+sys.path.insert(0, './djangoapp')
+from djangoapp import wsgi
 
 
 app = wsgi.application

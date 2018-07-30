@@ -735,7 +735,7 @@ Cada <em>request handler</em>  bloquea esperando conexion.</p></section>
             <header><h1>Ejemplo: Apache + mod_python + Django</h1></header>
             
             
-            <section><div class="highlight"><pre># from the past!
+            <section><div class="highlight"><pre><span></span># from the past!
 <span class="nt">&lt;Location</span> <span class="err">&quot;/mysite/&quot;</span><span class="nt">&gt;</span>
     SetHandler python-program
     PythonHandler django.core.handlers.modpython
@@ -915,12 +915,12 @@ Cada <em>request handler</em>  bloquea esperando conexion.</p></section>
             <header><h1>Ejemplo WSGI: simple callable</h1></header>
             
             
-            <section><div class="highlight"><pre><span class="c"># simple.py</span>
+            <section><div class="highlight"><pre><span></span><span class="c1"># simple.py</span>
 <span class="k">def</span> <span class="nf">app</span><span class="p">(</span><span class="n">environ</span><span class="p">,</span> <span class="n">start_response</span><span class="p">):</span>
-    <span class="n">status</span> <span class="o">=</span> <span class="s">&#39;200 OK&#39;</span> <span class="c"># HTTP Status</span>
-    <span class="n">headers</span> <span class="o">=</span> <span class="p">[(</span><span class="s">&#39;Content-type&#39;</span><span class="p">,</span> <span class="s">&#39;text/plain&#39;</span><span class="p">)]</span> <span class="c"># HTTP Headers</span>
+    <span class="n">status</span> <span class="o">=</span> <span class="s1">&#39;200 OK&#39;</span> <span class="c1"># HTTP Status</span>
+    <span class="n">headers</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">&#39;Content-type&#39;</span><span class="p">,</span> <span class="s1">&#39;text/plain&#39;</span><span class="p">)]</span> <span class="c1"># HTTP Headers</span>
     <span class="n">start_response</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">headers</span><span class="p">)</span>
-    <span class="k">return</span> <span class="p">[</span><span class="s">&quot;Hello from &quot;</span><span class="p">,</span> <span class="s">&quot;simple app&quot;</span><span class="p">,</span> <span class="p">]</span>
+    <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;Hello from &quot;</span><span class="p">,</span> <span class="s2">&quot;simple app&quot;</span><span class="p">,</span> <span class="p">]</span>
 </pre></div>
 </section>
             
@@ -956,17 +956,17 @@ Cada <em>request handler</em>  bloquea esperando conexion.</p></section>
             <header><h1>Ejemplo WSGI: aplicación Flask</h1></header>
             
             
-            <section><div class="highlight"><pre><span class="c"># flaskapp.py</span>
+            <section><div class="highlight"><pre><span></span><span class="c1"># flaskapp.py</span>
 <span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span>
 <span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Response</span>
-<span class="n">flask_app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="s">&#39;flaskapp&#39;</span><span class="p">)</span>
+<span class="n">flask_app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="s1">&#39;flaskapp&#39;</span><span class="p">)</span>
 
 
-<span class="nd">@flask_app.route</span><span class="p">(</span><span class="s">&#39;/hello&#39;</span><span class="p">)</span>
+<span class="nd">@flask_app.route</span><span class="p">(</span><span class="s1">&#39;/hello&#39;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">hello_world</span><span class="p">():</span>
     <span class="k">return</span> <span class="n">Response</span><span class="p">(</span>
-        <span class="s">&#39;Hello world from Flask!</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">,</span>
-        <span class="n">mimetype</span><span class="o">=</span><span class="s">&#39;text/plain&#39;</span>
+        <span class="s1">&#39;Hello world from Flask!</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span>
+        <span class="n">mimetype</span><span class="o">=</span><span class="s1">&#39;text/plain&#39;</span>
     <span class="p">)</span>
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">flask_app</span><span class="o">.</span><span class="n">wsgi_app</span>
@@ -1005,25 +1005,25 @@ Cada <em>request handler</em>  bloquea esperando conexion.</p></section>
             <header><h1>Ejemplo WSGI: aplicación django</h1></header>
             
             
-            <section><div class="highlight"><pre><span class="c"># djangoapp/views.py</span>
+            <section><div class="highlight"><pre><span></span><span class="c1"># djangoapp/views.py</span>
 <span class="kn">from</span> <span class="nn">django.http</span> <span class="kn">import</span> <span class="n">HttpResponse</span>
 <span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">HttpResponse</span><span class="p">(</span>
-        <span class="s">&#39;Hello world from Django!</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">,</span>
-        <span class="n">content_type</span><span class="o">=</span><span class="s">&#39;text/plain&#39;</span>
+        <span class="s1">&#39;Hello world from Django!</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span>
+        <span class="n">content_type</span><span class="o">=</span><span class="s1">&#39;text/plain&#39;</span>
     <span class="p">)</span>
 
-<span class="c"># djangoapp/urls.py</span>
+<span class="c1"># djangoapp/urls.py</span>
 <span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="kn">import</span> <span class="n">patterns</span><span class="p">,</span> <span class="n">include</span><span class="p">,</span> <span class="n">url</span>
 <span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
-<span class="n">urlpatterns</span> <span class="o">=</span> <span class="n">patterns</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">,</span>
-    <span class="n">url</span><span class="p">(</span><span class="s">r&#39;^hello/&#39;</span><span class="p">,</span> <span class="s">&#39;djangoapp.views.index&#39;</span><span class="p">),</span>
-    <span class="n">url</span><span class="p">(</span><span class="s">r&#39;^admin/&#39;</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">urls</span><span class="p">)),</span>
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="n">patterns</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+    <span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^hello/&#39;</span><span class="p">,</span> <span class="s1">&#39;djangoapp.views.index&#39;</span><span class="p">),</span>
+    <span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^admin/&#39;</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">urls</span><span class="p">)),</span>
 <span class="p">)</span>
 
-<span class="c"># djangoapp/wsgi.py</span>
+<span class="c1"># djangoapp/wsgi.py</span>
 <span class="kn">import</span> <span class="nn">os</span>
-<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s">&quot;DJANGO_SETTINGS_MODULE&quot;</span><span class="p">,</span> <span class="s">&quot;settings&quot;</span><span class="p">)</span>
+<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;DJANGO_SETTINGS_MODULE&quot;</span><span class="p">,</span> <span class="s2">&quot;settings&quot;</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">django.core.wsgi</span> <span class="kn">import</span> <span class="n">get_wsgi_application</span>
 <span class="n">application</span> <span class="o">=</span> <span class="n">get_wsgi_application</span><span class="p">()</span>
 </pre></div>
@@ -1219,8 +1219,8 @@ gunicorn -w 2 djangoapp.wsgi:application</p></section>
 <li>Protocolo uwsgi comunicación con web server (también server propio)</li>
 </ul>
 <p>. </p>
-<div class="highlight"><pre>uwsgi --http :8000 --module flaskapp:app   <span class="se">\</span>
- --master --processes 4  --threads 2
+<div class="highlight"><pre><span></span>uwsgi --http :8000 --module flaskapp:app   <span class="se">\</span>
+ --master --processes <span class="m">4</span>  --threads <span class="m">2</span>
 </pre></div>
 </section>
             
@@ -1402,12 +1402,12 @@ gunicorn -w 2 djangoapp.wsgi:application</p></section>
             
             
             <section><h2>Usuario dedicado</h2>
-<div class="highlight"><pre>groupadd -g 500 creantbits
-useradd -g 500 -d /creantbits -m -s /bin/bash creantbits
+<div class="highlight"><pre><span></span>groupadd -g <span class="m">500</span> creantbits
+useradd -g <span class="m">500</span> -d /creantbits -m -s /bin/bash creantbits
 </pre></div>
 
 <h2>pip install virtualenvwrapper</h2>
-<div class="highlight"><pre><span class="nb">export </span><span class="nv">WORKON_HOME</span><span class="o">=</span><span class="nv">$HOME</span>/.virtualenvs
+<div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">WORKON_HOME</span><span class="o">=</span><span class="nv">$HOME</span>/.virtualenvs
 <span class="nb">source</span> /usr/local/bin/virtualenvwrapper.sh
 
 mkvirtualenv django
@@ -1415,8 +1415,8 @@ workon django
 </pre></div>
 
 <h2>pip install pew</h2>
-<div class="highlight"><pre><span class="nb">export </span><span class="nv">WORKON_HOME</span><span class="o">=</span><span class="nv">$HOME</span>/.virtualenvs
-<span class="nv">PS1</span><span class="o">=</span><span class="s2">&quot;\[\033[01;34m\]\$(basename &#39;$VIRTUAL_ENV&#39;)\e[0m$PS1&quot;</span>
+<div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">WORKON_HOME</span><span class="o">=</span><span class="nv">$HOME</span>/.virtualenvs
+<span class="nv">PS1</span><span class="o">=</span><span class="s2">&quot;\[\033[01;34m\]\$(basename &#39;</span><span class="nv">$VIRTUAL_ENV</span><span class="s2">&#39;)\e[0m</span><span class="nv">$PS1</span><span class="s2">&quot;</span>
 
 pew-new django
 pew-workon django
@@ -1457,7 +1457,7 @@ pew-in django python manage.py runserver
             
             
             <section><p>http://circus.readthedocs.org/en/latest/</p>
-<div class="highlight"><pre>pip install circus
+<div class="highlight"><pre><span></span>pip install circus
 pip install circus-web
 </pre></div>
 </section>
@@ -1494,7 +1494,7 @@ pip install circus-web
             <header><h1>circusd appserver</h1></header>
             
             
-            <section><div class="highlight"><pre><span class="k">[circus]</span>
+            <section><div class="highlight"><pre><span></span><span class="k">[circus]</span>
 <span class="na">httpd</span> <span class="o">=</span> <span class="s">True</span>
 <span class="na">statsd</span> <span class="o">=</span> <span class="s">True</span>
 <span class="na">httpd_host</span> <span class="o">=</span> <span class="s">0.0.0.0</span>
@@ -1550,7 +1550,7 @@ pip install circus-web
             <header><h1>uwsgi.ini</h1></header>
             
             
-            <section><div class="highlight"><pre><span class="k">[uwsgi]</span>
+            <section><div class="highlight"><pre><span></span><span class="k">[uwsgi]</span>
 <span class="na">socket</span> <span class="o">=</span> <span class="s">/tmp/creantbits.sock</span>
 <span class="na">http</span> <span class="o">=</span> <span class="s">:8000</span>
 <span class="na">chmod-socket</span> <span class="o">=</span> <span class="s">666</span>
@@ -1615,7 +1615,7 @@ pip install circus-web
             <header><h1>supervisor</h1></header>
             
             
-            <section><div class="highlight"><pre><span class="k">[program:trespamsz]</span>
+            <section><div class="highlight"><pre><span></span><span class="k">[program:trespamsz]</span>
 <span class="na">command</span> <span class="o">=</span> <span class="s">/usr/local/bin/uwsgi --ini /etc/uwsgi-prod.d/trespamsz.ini</span>
 <span class="na">directory</span> <span class="o">=</span> <span class="s">/tmp</span>
 <span class="na">user</span><span class="o">=</span><span class="s">trespamsz</span>
@@ -1662,15 +1662,15 @@ pip install circus-web
             <header><h1>nginx</h1></header>
             
             
-            <section><div class="highlight"><pre><span class="c"># uwsgi</span>
+            <section><div class="highlight"><pre><span></span><span class="c1"># uwsgi</span>
 location / <span class="o">{</span>
-    include uwsgi_params;
-    uwsgi_pass 127.0.0.1:3031;
+    include uwsgi_params<span class="p">;</span>
+    uwsgi_pass <span class="m">127</span>.0.0.1:3031<span class="p">;</span>
 <span class="o">}</span>
-<span class="c"># proxy</span>
+<span class="c1"># proxy</span>
 location / <span class="o">{</span>
-    include proxy_params;
-    proxy_pass http://localhost:8000;
+    include proxy_params<span class="p">;</span>
+    proxy_pass http://localhost:8000<span class="p">;</span>
 <span class="o">}</span>
 </pre></div>
 </section>
@@ -1707,29 +1707,29 @@ location / <span class="o">{</span>
             <header><h1>ejemplo nginx</h1></header>
             
             
-            <section><div class="highlight"><pre>server <span class="o">{</span>
-    listen 80;
-    server_name trespams.com;
-    access_log  /var/log/nginx/trespamsz-access.log;
-    error_log  /var/log/nginx/trespamsz-error.log;
+            <section><div class="highlight"><pre><span></span>server <span class="o">{</span>
+    listen <span class="m">80</span><span class="p">;</span>
+    server_name trespams.com<span class="p">;</span>
+    access_log  /var/log/nginx/trespamsz-access.log<span class="p">;</span>
+    error_log  /var/log/nginx/trespamsz-error.log<span class="p">;</span>
 
     location / <span class="o">{</span>
-        uwsgi_pass unix:/var/pywww/trespamsz/nginx.sock;
-        include uwsgi_params;
+        uwsgi_pass unix:/var/pywww/trespamsz/nginx.sock<span class="p">;</span>
+        include uwsgi_params<span class="p">;</span>
     <span class="o">}</span>
 
     location /media/trespamsz <span class="o">{</span>
-        root /var/www;
-        expires max;
-        access_log off;
+        root /var/www<span class="p">;</span>
+        expires max<span class="p">;</span>
+        access_log off<span class="p">;</span>
     <span class="o">}</span>
     location /static/trespamsz <span class="o">{</span>
-        root /var/www;
-        expires max;
-        access_log off;
+        root /var/www<span class="p">;</span>
+        expires max<span class="p">;</span>
+        access_log off<span class="p">;</span>
     <span class="o">}</span>
     location ~ /<span class="se">\.</span>hg <span class="o">{</span>
-        deny  all;
+        deny  all<span class="p">;</span>
     <span class="o">}</span>
 <span class="o">}</span>
 </pre></div>
@@ -1768,10 +1768,10 @@ location / <span class="o">{</span>
             
             
             <section><h2>timeouts</h2>
-<div class="highlight"><pre>client_body_timeout 12;
-client_header_timeout 12;
-send_timeout 10;
-keepalive_timeout 15;
+<div class="highlight"><pre><span></span>client_body_timeout <span class="m">12</span><span class="p">;</span>
+client_header_timeout <span class="m">12</span><span class="p">;</span>
+send_timeout <span class="m">10</span><span class="p">;</span>
+keepalive_timeout <span class="m">15</span><span class="p">;</span>
 </pre></div>
 
 <ul>
